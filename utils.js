@@ -100,15 +100,15 @@ export function WeaponDamage(weaponBaseDamage, statScaling, levelScaling) {
  * 
  * @param {StatsType} stats 
  * @param {WeaponItemDefinitions} weaponItemDefinition 
- * @param {Map<number, AttributeDefinition>} attributeDefinition
+ * @param {Map<number, AttributeDefinition>} attributeDefinitionMap
  */
-export function StatScaling(stats, weaponItemDefinition, attributeDefinition) {
+export function StatScaling(stats, weaponItemDefinition, attributeDefinitionMap) {
     let sum = 0
     for (const stat of Object.keys(stats)) {
         if (stat === "Constitution") {
             continue
         }
-        const attributeData = attributeDefinition.get(stats[stat])
+        const attributeData = attributeDefinitionMap.get(stats[stat])
         if (!attributeData) {
             throw new Error("No AttributeDefinition found")
         }
@@ -159,7 +159,7 @@ export function EquipLoadBaseDamage(encumbranceData, load) {
  */
 export function IsItemClassIncluded(masterItemDefinition, itemPerk) {
     const masterItemClass = MasterItemClassSplit(masterItemDefinition)
-    return itemPerk.ItemClass.split(',').some(item => masterItemClass.includes(item))
+    return itemPerk.ItemClass.split('+').some(item => masterItemClass.includes(item))
 }
 
 
@@ -168,9 +168,9 @@ export function IsItemClassIncluded(masterItemDefinition, itemPerk) {
  * @param {MasterItemDefinitions} masterItemDefinition 
  * @param {PerkData} itemPerk 
  */
-export function IsItemClassExclude(masterItemDefinition, itemPerk) {
+export function IsItemClassExcluded(masterItemDefinition, itemPerk) {
     const masterItemClass = MasterItemClassSplit(masterItemDefinition)
-    return itemPerk.ExcludeItemClass.split(',').some(item => masterItemClass.includes(item))
+    return itemPerk.ExcludeItemClass.split('+').some(item => masterItemClass.includes(item))
 }
 
 /**
@@ -178,7 +178,7 @@ export function IsItemClassExclude(masterItemDefinition, itemPerk) {
  * @param {MasterItemDefinitions} masterItemDefinition 
  */
 export function MasterItemClassSplit(masterItemDefinition) {
-    return masterItemDefinition.ItemClass.split(',').map(item => item.trim())
+    return masterItemDefinition.ItemClass.split('+').map(item => item.trim())
 }
 
 /**
@@ -191,7 +191,7 @@ export function MasterItemClassSplit(masterItemDefinition) {
  */
 export function ScaleProperties(gearscore, data, itemPerk, itemDefinition) {
     const isItemClassIncluded = IsItemClassIncluded(itemDefinition, itemPerk)
-    const isItemClassExcluded = IsItemClassExclude(itemDefinition, itemPerk)
+    const isItemClassExcluded = IsItemClassExcluded(itemDefinition, itemPerk)
 
     if (!isItemClassIncluded) {
         throw new Error("MasterItemDefinition's ItemClass doesn't contain the required ItemClass that the PerkData is looking for.")
