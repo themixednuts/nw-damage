@@ -1,8 +1,8 @@
 //@ts-check
 
-import { ItemWeight, LevelScaling, WeaponBaseDamage } from "./utils"
+import { ItemWeight, LevelScaling, StatScaling, WeaponBaseDamage } from "./utils"
 import { describe, expect, it } from "vitest"
-import { armorDef, wepDef } from "./variables"
+import { armorDef, attributeDefinitions, wepDef } from "./variables"
 
 
 describe("#WeaponBaseDamage", () => {
@@ -17,4 +17,18 @@ describe("#ItemWeight", () => {
 
 describe("#LevelScaling", () => {
     it("returns 1.475", () => expect(LevelScaling(60)).toBe(1.475))
+})
+
+describe("#StatScaling", () => {
+    it("returns 4.782375", () => {
+        const stats = {
+            Strength: 500,
+            Intelligence: 5,
+            Dexterity: 5,
+            Focus: 5,
+            Constitution: 5
+        }
+
+        expect(StatScaling(stats, wepDef, attributeDefinitions)).toBe(4.782375)
+    })
 })

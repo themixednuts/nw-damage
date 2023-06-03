@@ -70,4 +70,4 @@ export default class Mannequin {
 
 const player = new Mannequin("player")
 
-console.log(player.Equipment.head)
+console.log(player.Stats)

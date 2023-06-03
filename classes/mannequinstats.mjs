@@ -1,5 +1,9 @@
 //@ts-check
 
+/**
+ * @typedef {{Strength: number,Intelligence: number,Dexterity: number,Focus: number,Constitution: number}} StatsType
+ */
+
 export class MannequinStats {
     #str = 5
     #dex = 5

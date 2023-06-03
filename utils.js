@@ -1,5 +1,7 @@
 //@ts-check
 
+import { MannequinStats } from "./classes/mannequinstats.mjs"
+
 /**
 * @typedef {import("@mixednuts/types").ArmorItemDefinitions} ArmorItemDefinitions
 * @typedef {import("@mixednuts/types").MasterItemDefinitions} MasterItemDefinitions
@@ -15,9 +17,11 @@
 * @typedef {import("@mixednuts/types").ConsumableItemDefinitions} ConsumableItemDefinitions
 * @typedef {import("@mixednuts/types").StatusEffectData} StatusEffectData
 * @typedef {import("@mixednuts/types").StatusEffectCategoryData} StatusEffectCategoryData
+* @typedef {import("@mixednuts/types").AttributeDefinition} AttributeDefinition
 * @typedef {"head" | "chest" | "hands" | "legs" | "feet" | "ring" | "earring" | "trinket" } ArmorSlotTypes
 * @typedef {"mainhand" | "offhand" | "shield" | "heartrune"} WeaponSlotTypes
 * @typedef { ArmorSlotTypes | WeaponSlotTypes} SlotTypes
+* @typedef {import("./classes/mannequinstats.mjs").StatsType} StatsType
 */
 
 /**
@@ -94,9 +98,28 @@ export function WeaponDamage(weaponBaseDamage, statScaling, levelScaling) {
 
 /**
  * 
+ * @param {StatsType} stats 
+ * @param {WeaponItemDefinitions} weaponItemDefinition 
+ * @param {Map<number, AttributeDefinition>} attributeDefinition
  */
-export function StatScaling() {
+export function StatScaling(stats, weaponItemDefinition, attributeDefinition) {
+    let sum = 0
+    for (const stat of Object.keys(stats)) {
+        if (stat === "Constitution") {
+            continue
+        }
+        const attributeData = attributeDefinition.get(stats[stat])
+        if (!attributeData) {
+            throw new Error("No AttributeDefinition found")
+        }
+        const modifierValueSum = attributeData.ModifierValueSum
+        if (modifierValueSum === null || modifierValueSum === undefined) {
+            throw new Error("No ModifierValueSum found in the AttributeDefinition object")
+        }
+        sum += weaponItemDefinition[`Scaling${stat}`] * modifierValueSum
+    }
 
+    return sum
 }
 
 /**
