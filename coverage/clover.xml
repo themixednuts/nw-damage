@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1685790972135" clover="3.2.0">
-  <project timestamp="1685790972135" name="All files">
-    <metrics statements="916" coveredstatements="779" conditionals="20" coveredconditionals="14" methods="16" coveredmethods="6" elements="952" coveredelements="799" complexity="0" loc="916" ncloc="916" packages="2" files="3" classes="3"/>
+<coverage generated="1685791199617" clover="3.2.0">
+  <project timestamp="1685791199617" name="All files">
+    <metrics statements="916" coveredstatements="782" conditionals="22" coveredconditionals="16" methods="16" coveredmethods="7" elements="954" coveredelements="805" complexity="0" loc="916" ncloc="916" packages="2" files="3" classes="3"/>
     <package name="damage">
-      <metrics statements="851" coveredstatements="772" conditionals="19" coveredconditionals="14" methods="15" coveredmethods="6"/>
+      <metrics statements="851" coveredstatements="775" conditionals="21" coveredconditionals="16" methods="15" coveredmethods="7"/>
       <file name="utils.js" path="C:\Users\jonfo\Documents\GitHub\@new-world\damage\utils.js">
-        <metrics statements="264" coveredstatements="185" conditionals="19" coveredconditionals="14" methods="15" coveredmethods="6"/>
+        <metrics statements="264" coveredstatements="188" conditionals="21" coveredconditionals="16" methods="15" coveredmethods="7"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -176,18 +176,18 @@
         <line num="168" count="1" type="stmt"/>
         <line num="169" count="1" type="stmt"/>
         <line num="170" count="1" type="stmt"/>
-        <line num="171" count="1" type="stmt"/>
-        <line num="172" count="0" type="stmt"/>
-        <line num="173" count="0" type="stmt"/>
-        <line num="174" count="0" type="stmt"/>
+        <line num="171" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="172" count="3" type="stmt"/>
+        <line num="173" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="174" count="3" type="stmt"/>
         <line num="175" count="1" type="stmt"/>
         <line num="176" count="1" type="stmt"/>
         <line num="177" count="1" type="stmt"/>
         <line num="178" count="1" type="stmt"/>
         <line num="179" count="1" type="stmt"/>
         <line num="180" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="181" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="182" count="3" type="stmt"/>
+        <line num="181" count="6" type="cond" truecount="1" falsecount="0"/>
+        <line num="182" count="6" type="stmt"/>
         <line num="183" count="1" type="stmt"/>
         <line num="184" count="1" type="stmt"/>
         <line num="185" count="1" type="stmt"/>
