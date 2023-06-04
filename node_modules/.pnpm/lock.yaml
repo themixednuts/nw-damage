@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@mixednuts/types':
-    specifier: ^1.0.2
-    version: 1.0.2
+    specifier: ^1.0.4
+    version: 1.0.4
 
 devDependencies:
   '@vitest/coverage-c8':
@@ -271,8 +271,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@mixednuts/types@1.0.2:
-    resolution: {integrity: sha512-jcwVHF9/O63OdRsIs6CHJSKiAeHx6eCo0m7tJJNQ8onr8nXnUSaMKkip4z7l8ghoV+Se9SmqtgoEZloFeZkoRw==}
+  /@mixednuts/types@1.0.4:
+    resolution: {integrity: sha512-h17FvcE6d6q6giuYtVbYu1vm94IZFZkxwgDJ81G0ysLVuyfqPNZZ2gu1C3V0FjNq1dGwPWqPhz7qrZ5TQufB+A==}
     dev: false
 
   /@types/chai-subset@1.3.3:

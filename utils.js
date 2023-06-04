@@ -1,7 +1,5 @@
 //@ts-check
 
-import { MannequinStats } from "./classes/mannequinstats.mjs"
-
 /**
 * @typedef {import("@mixednuts/types").ArmorItemDefinitions} ArmorItemDefinitions
 * @typedef {import("@mixednuts/types").MasterItemDefinitions} MasterItemDefinitions
@@ -100,15 +98,15 @@ export function WeaponDamage(weaponBaseDamage, statScaling, levelScaling) {
  * 
  * @param {StatsType} stats 
  * @param {WeaponItemDefinitions} weaponItemDefinition 
- * @param {Map<number, AttributeDefinition>} attributeDefinitionMap
+ * @param {AttributeDefinition[]} attributeDefinitions
  */
-export function StatScaling(stats, weaponItemDefinition, attributeDefinitionMap) {
+export function StatScaling(stats, weaponItemDefinition, attributeDefinitions) {
     let sum = 0
     for (const stat of Object.keys(stats)) {
         if (stat === "Constitution") {
             continue
         }
-        const attributeData = attributeDefinitionMap.get(stats[stat])
+        const attributeData = binarySearchObject(attributeDefinitions, stats[stat], "Level")
         if (!attributeData) {
             throw new Error("No AttributeDefinition found")
         }
@@ -135,12 +133,11 @@ export function LevelScaling(level, playerBaseAttributesData) {
 
 /**
  * 
- * @param {EncumbranceData} encumbranceData 
+ * @param {EncumbranceData} encumbranceData Pass the Player Encumbrance 
  * @param {number} load 
  * @returns 
  */
 export function EquipLoadBaseDamage(encumbranceData, load) {
-
     if (load < 13) {
         return encumbranceData.EquipLoadDamageMultFast
     }
@@ -187,7 +184,6 @@ export function MasterItemClassSplit(masterItemDefinition) {
  * @param {ConsumableItemDefinitions} data 
  * @param {PerkData} itemPerk 
  * @param {MasterItemDefinitions} itemDefinition 
- * @returns 
  */
 export function ScaleProperties(gearscore, data, itemPerk, itemDefinition) {
     const isItemClassIncluded = IsItemClassIncluded(itemDefinition, itemPerk)
@@ -223,12 +219,11 @@ export function ScaleProperties(gearscore, data, itemPerk, itemDefinition) {
 /**
  * 
  * @param {StatusEffectData} statusData 
- * @param {number} acc 
- * @param {StatusEffectCategoryData} [statusCategoryData]
+ * @param {StatusEffectCategoryData[]} [statusCategoryData]
  */
-export function StatusEffectLimit(statusData, acc, statusCategoryData) {
+export function StatusEffectLimit(statusData, statusCategoryData) {
     const isCapped = statusData.EffectCategories.split('+').map(item => item.trim()).some(item => statusCategoryData?.StatusEffectCategoryID === item)
-    const limit = statusCategoryData?.ValueLimits.split(',').map(item => item.trim())
+    const limit = statusCategoryData.ValueLimits.split(',').map(item => item.trim())
 
 
 }
@@ -261,4 +256,50 @@ export function Damage(weaponDefinition, weaponDamage, damageRow, activeAbilitie
     }
     const baseFormula = weaponDamage
         * DmgCoef
+}
+
+
+/**
+ * 
+ * @param {PerkData} itemPerk 
+ * @param {number} gearScore 
+ * @param {MasterItemDefinitions} [masterDefiniton] 
+ */
+export function ItemPerkScaling(itemPerk, gearScore, masterDefiniton) {
+    const { ScalingPerGearScore, ItemClassGSBonus } = itemPerk
+    let bonus = 0
+
+    if (masterDefiniton) {
+        ItemClassGSBonus.split(",").forEach(gsbonus => {
+            const arr = gsbonus.split(":")
+            const itemClass = arr[0]
+            const value = arr[1]
+
+            if (masterDefiniton.ItemClass.includes(itemClass)) {
+                bonus = Number(value)
+            }
+        })
+    }
+
+    return 1 + 
+
+}
+
+/**
+ * @template T
+ * @param {T[]} arr
+ * @param {number} target 
+ * @param {string} searchField
+ */
+export function binarySearchObject(arr, target, searchField) {
+    let leftIndex = 0
+    let rightIndex = arr.length - 1
+
+    while (leftIndex <= rightIndex) {
+        let middleIndex = Math.floor((leftIndex + rightIndex) / 2)
+        if (target === arr[middleIndex][searchField]) return arr[middleIndex]
+
+        if (target < arr[middleIndex][searchField]) rightIndex = middleIndex - 1
+        else leftIndex = middleIndex + 1
+    }
 }
