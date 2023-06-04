@@ -281,8 +281,7 @@ export function ItemPerkScaling(itemPerk, gearScore, masterDefiniton) {
         })
     }
 
-    return 1 + 
-
+    return 1 + (Number(ScalingPerGearScore) || 0) * (gearScore + bonus - 100)
 }
 
 /**
