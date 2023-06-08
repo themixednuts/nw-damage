@@ -2,6 +2,7 @@
 
 import { MannequinWeaponSlot } from "./classes/mannequinarmorslot.mjs";
 import { MannequinStats } from "./classes/mannequinstats.mjs";
+import { MannequinVitals } from "./classes/mannequinvitals.mjs";
 import { MannequinArmorSlot } from "./classes/mannequinweaponslot.mjs";
 
 /**
@@ -20,8 +21,7 @@ import { MannequinArmorSlot } from "./classes/mannequinweaponslot.mjs";
 export default class Mannequin {
   /** @type {"player" | "target"} */
   #type
-  /** @type {VitalsData | undefined} */
-  #vitals
+  #vitals = new MannequinVitals()
   /** @type {{[key in ArmorSlotTypes]: MannequinArmorSlot} & {[key in WeaponSlotTypes]: MannequinWeaponSlot}} */
   #equipment = {
     head: new MannequinArmorSlot("head"),
@@ -46,16 +46,7 @@ export default class Mannequin {
     this.#type = type === "player" || type === "target" ? type : "player";
   }
 
-  /** @param {VitalsData} vitals */
-  setVitals(vitals) {
-    this.#vitals = structuredClone(vitals);
-    return this
-  }
-
   get Vitals() {
-    if (!this.#vitals) {
-      throw new Error(`No VitalsData set for ${this.#type}`)
-    }
     return this.#vitals;
   }
 
@@ -66,8 +57,11 @@ export default class Mannequin {
   get Stats() {
     return this.#stats
   }
+
+  EquippedAbilities() {
+    const arr = []
+    for (const slot of Object.values(this.Equipment)) {
+      slot.Perks
+    }
+  }
 }
-
-const player = new Mannequin("player")
-
-console.log(player.Stats)

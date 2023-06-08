@@ -1,6 +1,8 @@
 //@ts-check
 
 /**
+* @author Mixed Nuts
+*
 * @typedef {import("@mixednuts/types").ArmorItemDefinitions} ArmorItemDefinitions
 * @typedef {import("@mixednuts/types").MasterItemDefinitions} MasterItemDefinitions
 * @typedef {import("@mixednuts/types").PerkData} PerkData
@@ -15,109 +17,119 @@
 * @typedef {import("@mixednuts/types").ConsumableItemDefinitions} ConsumableItemDefinitions
 * @typedef {import("@mixednuts/types").StatusEffectData} StatusEffectData
 * @typedef {import("@mixednuts/types").StatusEffectCategoryData} StatusEffectCategoryData
+* @typedef {import("@mixednuts/types").VitalsLevelData} VitalsLevelData
 * @typedef {import("@mixednuts/types").AttributeDefinition} AttributeDefinition
+* @typedef {import("@mixednuts/types").DamageTypeDatumCategory} DamageTypeDatumCategory
+* @typedef {import("@mixednuts/types").ABSVitalsCategoryABSVitalsCategory} ABSVitalsCategoryABSVitalsCategory
+* @typedef {import("@mixednuts/types").DMGVitalsCategoryDMGVitalsCategory} DMGVitalsCategoryDMGVitalsCategoryb
 * @typedef {"head" | "chest" | "hands" | "legs" | "feet" | "ring" | "earring" | "trinket" } ArmorSlotTypes
 * @typedef {"mainhand" | "offhand" | "shield" | "heartrune"} WeaponSlotTypes
 * @typedef { ArmorSlotTypes | WeaponSlotTypes} SlotTypes
 * @typedef {import("./classes/mannequinstats.mjs").StatsType} StatsType
+* @typedef {"Strength" | "Dexterity" | "Intelligence" | "Focus" | "Constitution"} AttributeNames
+* @typedef {{"AbilityDataSum": Record<keyof AbilityData, number>, "StatusAffixDataSum": Record<keyof StatusEffectData | keyof AffixStatData, number>}} PropertySumObject 
 */
 
 /**
-* Takes a weapon and it's gearscore to return the gearscore scaled BaseDamage.
-* @param {WeaponItemDefinitions} weaponDefinition
-* @param {number} gearscore
-* @param {PlayerBaseAttributesData} [playerBaseAttributes]
+* @template T
+* @typedef {Pick<T, {[K in keyof T]: T[K] extends (infer U) ? U extends number ? K : never : never}[keyof T]>} NumberKeysOnly
+*/
+
+/**
+* Takes a WeaponItemDefinition and it's gearscore and returns the gearscore scaled BaseDamage.
+* @param {WeaponItemDefinitions} weaponDefinition - The weapon defintion.
+* @param {number} gearscore - The gearscore of the weapon.
+* @param {PlayerBaseAttributesData} [playerBaseAttributes] - Optional, if not provided will use default values.
 */
 export function WeaponBaseDamage(weaponDefinition, gearscore, playerBaseAttributes) {
-    const baseDamageCompund =
-        playerBaseAttributes?.['player attribute data']['base damage compound increase'] || 0.0112
-    const compoundDiminishingMulti =
-        playerBaseAttributes?.['player attribute data'][
-        'compound increase diminishing multiplier'
-        ] || 0.6667
+  const baseDamageCompund =
+    playerBaseAttributes?.['player attribute data']['base damage compound increase'] || 0.0112
+  const compoundDiminishingMulti =
+    playerBaseAttributes?.['player attribute data'][
+    'compound increase diminishing multiplier'
+    ] || 0.6667
 
-    const baseDamage = weaponDefinition.BaseDamage
+  const baseDamage = weaponDefinition.BaseDamage
 
-    if (baseDamage === null) {
-        throw new Error("BaseDamage is null")
-    }
+  if (baseDamage === null) {
+    throw new Error("BaseDamage is null")
+  }
 
-    const base =
-        (1 + baseDamageCompund) ** Math.floor((Math.min(500, Math.max(gearscore, 100)) - 100) / 5)
-    const diminished =
-        (1 + baseDamageCompund * compoundDiminishingMulti) ** Math.floor((Math.max(gearscore, 500) - 500) / 5)
+  const base =
+    (1 + baseDamageCompund) ** Math.floor((Math.min(500, Math.max(gearscore, 100)) - 100) / 5)
+  const diminished =
+    (1 + baseDamageCompund * compoundDiminishingMulti) ** Math.floor((Math.max(gearscore, 500) - 500) / 5)
 
-    const result = baseDamage * base * diminished
+  const result = baseDamage * base * diminished
 
-    return result
+  return result
 }
 
 /**
-*
-* @param {ArmorItemDefinitions} definition
-*
+* Returns the weight of the item.
+* @param {ArmorItemDefinitions | WeaponItemDefinitions} definition
 */
 export function ItemWeight(definition) {
-    return Math.floor(Number(definition.WeightOverride)) / 10
+  return Math.floor(Number(definition.WeightOverride)) / 10
 }
 
 /**
-*
-* @param {DamageTypeData} damageTypeData
-* @param {number} weaponGearscore
-* @param {VitalsData} vitalsData
-* @param {PlayerBaseAttributesData} [playerBaseAttributes]
-* @param {number} [rating]
-* @param {number} [armorBonus]
+ * Converts the VitalsData ArmorMitigation to ArmorRating.
+ * @param {number} vitalsLevelGearscore 
+ * @param {number} vitalsArmorMitigation 
+ * @param {number} playerAttrArmorExponent 
+ */
+export function ArmorMitigationToArmorRating(vitalsLevelGearscore, vitalsArmorMitigation, playerAttrArmorExponent) {
+  return (vitalsLevelGearscore ** playerAttrArmorExponent * vitalsArmorMitigation) / (1 - vitalsArmorMitigation)
+}
+
+/**
+* Returns the mitigation value.
+* @param {DamageTypeDatumCategory} damageTypeData - The DamageType category.
+* @param {number} weaponGearscore - The gearscore of the weapon.
+* @param {VitalsData} vitalsData - VitalsData
+* @param {VitalsLevelData} vitalsLevelData - VitalsLevelData - Match the level of the vitals data.
+* @param {PlayerBaseAttributesData} [playerBaseAttributes] - Optional, if not provided will use default values.
+* @param {number} [rating] - Optional, if not provided will calculate from vitals data. Used to overwrite, for example, if you want to calculate mitigation for a player with a specific armor rating.
+* @param {number} [armorBonus] - Optional, if not provided will use 0. This is the property ElementalArmor and PhysicalArmor on the StatusEffectData.
 */
-export function Mitigation(damageTypeData, weaponGearscore, vitalsData, playerBaseAttributes, rating, armorBonus) {
-    const category = damageTypeData.Category
-    const vitalsMit = (category === 'Physical' ? vitalsData.PhysicalMitigation : category === 'Elemental' ? vitalsData.ElementalMitigation : null) ?? 0
-    const vitalsGs = vitalsData.GearScoreOverride
-    const playerAttrArmorExponent = playerBaseAttributes?.['player attribute data']['armor mitigation exponent'] ?? 1.2
+export function Mitigation(damageTypeData, weaponGearscore, vitalsData, vitalsLevelData, playerBaseAttributes, rating, armorBonus) {
+  const vitalsMit = (damageTypeData === 'Physical' ? vitalsData.PhysicalMitigation : damageTypeData === 'Elemental' ? vitalsData.ElementalMitigation : null) ?? 0
+  const { GearScore } = vitalsLevelData
+  const armorMitigationExponent = playerBaseAttributes?.['player attribute data']['armor mitigation exponent'] ?? 1.2
+  const armorRating = rating ?? ArmorMitigationToArmorRating(GearScore, armorMitigationExponent, vitalsMit)
+  const mit = 1 - 1 / (1 + Math.floor(armorRating * (1 + (armorBonus ?? 0))) / Math.max(weaponGearscore, 100) ** armorMitigationExponent)
 
-    const convertToRating = (Number(vitalsGs) ** playerAttrArmorExponent * vitalsMit) / (1 - vitalsMit)
-    const armorRating = rating ?? convertToRating
-
-    const mit = 1 - 1 / (1 + Math.floor(armorRating * (1 + (armorBonus ?? 0))) / Math.max(weaponGearscore, 100) ** playerAttrArmorExponent)
-
-    return mit
+  return mit
 }
 
 /**
-*
-* @param {number} weaponBaseDamage
-* @param {number} statScaling
-* @param {number} levelScaling
+* Returns the weapon damage.
+* @param {number} weaponBaseDamage Gearscore scaled BaseDamage. Use WeaponBaseDamage() to get this value.
+* @param {number} statScaling - The stat scaling value. Use StatScaling() to get this value.
+* @param {number} levelScaling - The level scaling value. Use LevelScaling() to get this value.
 */
 export function WeaponDamage(weaponBaseDamage, statScaling, levelScaling) {
-    return weaponBaseDamage * (1 + levelScaling + statScaling)
+  return weaponBaseDamage * (1 + levelScaling + statScaling)
 }
 
 /**
+ * Returns the stat scaling value for the WepaonItemDefinition and AttributeName 
+ * @param {AttributeNames} attributeName - Name of the attribute to get the scaling value for. ie. "Strength"
+ * @param {WeaponItemDefinitions} weaponItemDefinition - The WeaponItemDefinition object 
+ * @param {AttributeDefinition} attributeDefinitions - The AttributeDefinition object
  * 
- * @param {StatsType} stats 
- * @param {WeaponItemDefinitions} weaponItemDefinition 
- * @param {AttributeDefinition[]} attributeDefinitions
+ * @example 
+ * const statScaling = StatScaling("Strength", weaponItemDefinition, attributeDefinitions)
  */
-export function StatScaling(stats, weaponItemDefinition, attributeDefinitions) {
-    let sum = 0
-    for (const stat of Object.keys(stats)) {
-        if (stat === "Constitution") {
-            continue
-        }
-        const attributeData = binarySearchObject(attributeDefinitions, stats[stat], "Level")
-        if (!attributeData) {
-            throw new Error("No AttributeDefinition found")
-        }
-        const modifierValueSum = attributeData.ModifierValueSum
-        if (modifierValueSum === null || modifierValueSum === undefined) {
-            throw new Error("No ModifierValueSum found in the AttributeDefinition object")
-        }
-        sum += weaponItemDefinition[`Scaling${stat}`] * modifierValueSum
-    }
+export function StatScaling(attributeName, weaponItemDefinition, attributeDefinitions) {
+  const { ModifierValueSum } = attributeDefinitions
+  if (ModifierValueSum === null || ModifierValueSum === undefined) {
+    throw new Error("No ModifierValueSum found in the AttributeDefinition object")
+  }
+  const scaled = weaponItemDefinition[`Scaling${attributeName}`] * ModifierValueSum
 
-    return sum
+  return scaled
 }
 
 /**
@@ -126,138 +138,103 @@ export function StatScaling(stats, weaponItemDefinition, attributeDefinitions) {
  * @param {PlayerBaseAttributesData} [playerBaseAttributesData] 
  */
 export function LevelScaling(level, playerBaseAttributesData) {
-    const levelMulti = playerBaseAttributesData?.['player attribute data']['level damage multiplier'] ?? 0.025
+  const levelMulti = playerBaseAttributesData?.['player attribute data']['level damage multiplier'] ?? 0.025
 
-    return (level - 1) * levelMulti
+  return (level - 1) * levelMulti
 }
 
 /**
- * 
+ * Returns the BaseDamage multiplier given the equipload value. 
  * @param {EncumbranceData} encumbranceData Pass the Player Encumbrance 
- * @param {number} load 
- * @returns 
+ * @param {number} equipLoad 
  */
-export function EquipLoadBaseDamage(encumbranceData, load) {
-    if (load < 13) {
-        return encumbranceData.EquipLoadDamageMultFast
-    }
-    if (load >= 13 && load < 23) {
-        return encumbranceData.EquipLoadDamageMultNormal
-    }
-    if (load >= 23) {
-        return encumbranceData.EquipLoadDamageMultSlow
-    }
+export function EquipLoadBaseDamage(encumbranceData, equipLoad) {
+  if (equipLoad < 13) {
+    return encumbranceData.EquipLoadDamageMultFast ?? 0
+  }
+  if (equipLoad >= 13 && equipLoad < 23) {
+    return encumbranceData.EquipLoadDamageMultNormal ?? 0
+  }
+  if (equipLoad >= 23) {
+    return encumbranceData.EquipLoadDamageMultSlow ?? 0
+  }
+
+  return 0
 }
 
 /**
- * 
+ * Checks if the MasterItemDefinition's ItemClass is included in the PerkData's ItemClass.
  * @param {MasterItemDefinitions} masterItemDefinition 
  * @param {PerkData} itemPerk 
  */
 export function IsItemClassIncluded(masterItemDefinition, itemPerk) {
-    const masterItemClass = MasterItemClassSplit(masterItemDefinition)
-    return itemPerk.ItemClass.split('+').some(item => masterItemClass.includes(item))
+  const masterItemClass = MasterItemClassSplit(masterItemDefinition)
+  return itemPerk.ItemClass.split('+').some(item => masterItemClass.includes(item))
 }
 
 
 /**
- * 
+ * Checks if the MasterItemDefinition's ItemClass is excluded in the PerkData's ItemClass.
  * @param {MasterItemDefinitions} masterItemDefinition 
  * @param {PerkData} itemPerk 
  */
 export function IsItemClassExcluded(masterItemDefinition, itemPerk) {
-    const masterItemClass = MasterItemClassSplit(masterItemDefinition)
-    return itemPerk.ExcludeItemClass.split('+').some(item => masterItemClass.includes(item))
+  const masterItemClass = MasterItemClassSplit(masterItemDefinition)
+  return itemPerk.ExcludeItemClass.split('+').some(item => masterItemClass.includes(item))
 }
 
 /**
- * 
+ * Splits the MasterItemDefinition's ItemClass into an array. 
  * @param {MasterItemDefinitions} masterItemDefinition 
  */
 export function MasterItemClassSplit(masterItemDefinition) {
-    return masterItemDefinition.ItemClass.split('+').map(item => item.trim())
+  return masterItemDefinition.ItemClass.split('+').map(item => item.trim())
 }
 
 /**
- * 
- * @param {number} gearscore 
- * @param {ConsumableItemDefinitions} data 
- * @param {PerkData} itemPerk 
- * @param {MasterItemDefinitions} itemDefinition 
+ * Returns the scaled ABSVitalsCategory or DMGVitalsCategory value. Checks if the value includes a '=' and if it does, it will split the value into an array and check if the vitalsCategory includes the key. If it does, it will return the value multiplied by the scaling value.
+ * If the value does not include a '=', it will return 0.
+ * @param { ABSVitalsCategoryABSVitalsCategory | DMGVitalsCategoryDMGVitalsCategoryb } value
+ * @param {VitalsData['VitalsCategories']} vitalsCategory
+ * @param {number} scaling 
  */
-export function ScaleProperties(gearscore, data, itemPerk, itemDefinition) {
-    const isItemClassIncluded = IsItemClassIncluded(itemDefinition, itemPerk)
-    const isItemClassExcluded = IsItemClassExcluded(itemDefinition, itemPerk)
+export function ScaleVitalsCategoryProperty(value, vitalsCategory, scaling) {
+  if (!value.includes('=')) {
+    return 0
+  }
 
-    if (!isItemClassIncluded) {
-        throw new Error("MasterItemDefinition's ItemClass doesn't contain the required ItemClass that the PerkData is looking for.")
+  const checks = value.split('+').map(item => item.trim())
+  let isMatch
+  let sum = 0
+  for (const check of checks) {
+    if (check.includes('=')) {
+      const [key, val] = check.split('=')
+      if (vitalsCategory.includes(key)) {
+        isMatch = true
+        sum += Number(val) * scaling
+      }
+    } else {
+      isMatch = false
     }
-    if (isItemClassExcluded) {
-        throw new Error("MasterItemDefinition's ItemClass contains an ExcludedItemClass that the PerkData doesn't want.")
-    }
+  }
 
-    const scale = Number(itemPerk.ScalingPerGearScore) || 1
-    const result = Object.fromEntries(Object.entries(data).map(([key, value]) => {
-        if (!StatusEffectSummablePropterties.includes(key) && !AbilityDataSummableProperties.includes(key) && !AffixStatSummableProperties.includes(key)) {
-            return [key, value]
-        }
-
-        if (typeof value === 'string' && value.includes('=')) {
-            const arr = value.split("=")
-            arr[1] = String(Number(arr[1]) * (1 + scale * (gearscore - 100)))
-            value = arr.join('=')
-
-            return [key, value]
-        }
-
-        return [key, value * (1 + scale * (gearscore - 100))]
-    }))
-
-    return result
+  if (isMatch) {
+    return sum
+  } else {
+    return 0
+  }
 }
 
 /**
- * 
+ * TODO: Finish this function 
  * @param {StatusEffectData} statusData 
- * @param {StatusEffectCategoryData[]} [statusCategoryData]
+ * @param {StatusEffectCategoryData} [statusCategoryData]
  */
 export function StatusEffectLimit(statusData, statusCategoryData) {
-    const isCapped = statusData.EffectCategories.split('+').map(item => item.trim()).some(item => statusCategoryData?.StatusEffectCategoryID === item)
-    const limit = statusCategoryData.ValueLimits.split(',').map(item => item.trim())
-
-
-}
-
-export function GetPropertySum() {
+  const isCapped = statusData.EffectCategories.split('+').map(item => item.trim()).some(item => statusCategoryData?.StatusEffectCategoryID === item)
+  const limit = statusCategoryData?.ValueLimits.split(',').map(item => item.trim())
 
 }
-
-export function VitalsCategoryCheck() {
-
-}
-
-/**
- * 
- * @param {WeaponItemDefinitions} weaponDefinition 
- * @param {number} weaponDamage 
- * @param {DamageData} damageRow 
- * @param {AbilityData[]} activeAbilities 
- * @param {StatusEffectData[]} activeStatusEffects 
- * @param {AffixStatData[]} activeAffixes 
- * @param {VitalsData} attackerVitalsData 
- * @param {number} equipLoadBaseDamage 
- */
-export function Damage(weaponDefinition, weaponDamage, damageRow, activeAbilities, activeStatusEffects, activeAffixes, attackerVitalsData, equipLoadBaseDamage) {
-    const { CritDamageMultiplier } = weaponDefinition
-    const { DmgCoef, DmgCoefHead, DmgCoefCrit, DamageType } = damageRow
-
-    if (!DmgCoef) {
-        throw new Error("DamageTable Row doesn't contain a valid DmgCoef value.")
-    }
-    const baseFormula = weaponDamage
-        * DmgCoef
-}
-
 
 /**
  * 
@@ -266,22 +243,22 @@ export function Damage(weaponDefinition, weaponDamage, damageRow, activeAbilitie
  * @param {MasterItemDefinitions} [masterDefiniton] 
  */
 export function ItemPerkScaling(itemPerk, gearScore, masterDefiniton) {
-    const { ScalingPerGearScore, ItemClassGSBonus } = itemPerk
-    let bonus = 0
+  const { ScalingPerGearScore, ItemClassGSBonus } = itemPerk
+  let bonus = 0
 
-    if (masterDefiniton) {
-        ItemClassGSBonus.split(",").forEach(gsbonus => {
-            const arr = gsbonus.split(":")
-            const itemClass = arr[0]
-            const value = arr[1]
+  if (masterDefiniton) {
+    ItemClassGSBonus.split(",").forEach(gsbonus => {
+      const arr = gsbonus.split(":")
+      const itemClass = arr[0]
+      const value = arr[1]
 
-            if (masterDefiniton.ItemClass.includes(itemClass)) {
-                bonus = Number(value)
-            }
-        })
-    }
+      if (masterDefiniton.ItemClass.includes(itemClass)) {
+        bonus = Number(value)
+      }
+    })
+  }
 
-    return 1 + (Number(ScalingPerGearScore) || 0) * (gearScore + bonus - 100)
+  return 1 + (Number(ScalingPerGearScore) || 0) * (gearScore + bonus - 100)
 }
 
 /**
@@ -291,14 +268,14 @@ export function ItemPerkScaling(itemPerk, gearScore, masterDefiniton) {
  * @param {string} searchField
  */
 export function binarySearchObject(arr, target, searchField) {
-    let leftIndex = 0
-    let rightIndex = arr.length - 1
+  let leftIndex = 0
+  let rightIndex = arr.length - 1
 
-    while (leftIndex <= rightIndex) {
-        let middleIndex = Math.floor((leftIndex + rightIndex) / 2)
-        if (target === arr[middleIndex][searchField]) return arr[middleIndex]
+  while (leftIndex <= rightIndex) {
+    let middleIndex = Math.floor((leftIndex + rightIndex) / 2)
+    if (target === arr[middleIndex][searchField]) return arr[middleIndex]
 
-        if (target < arr[middleIndex][searchField]) rightIndex = middleIndex - 1
-        else leftIndex = middleIndex + 1
-    }
+    if (target < arr[middleIndex][searchField]) rightIndex = middleIndex - 1
+    else leftIndex = middleIndex + 1
+  }
 }

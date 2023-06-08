@@ -66,4 +66,17 @@ export class MannequinSlot {
     this.#perks[index] = perk;
     return this
   }
+
+  EquippedAbilities() {
+
+    const abilities = this.Perks.map(perk => perk.EquipAbility)
+
+    /**
+     * Contains an array of AbilityIDs and the gearscore of the item
+     * @type {Map<string[], number>}
+     */
+    const map = new Map()
+    map.set(abilities, this.GearScore)
+    return map
+  }
 }

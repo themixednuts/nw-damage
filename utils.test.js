@@ -1,6 +1,6 @@
 //@ts-check
 
-import { EquipLoadBaseDamage, IsItemClassExcluded, IsItemClassIncluded, ItemWeight, LevelScaling, StatScaling, WeaponBaseDamage } from "./utils"
+import { EquipLoadBaseDamage, IsItemClassExcluded, IsItemClassIncluded, ItemWeight, LevelScaling, StatScaling, WeaponBaseDamage, WeaponDamage } from "./utils"
 import { describe, expect, it } from "vitest"
 import { armorDef, attributeDefinitions, fireGem_t2, masterItem_fireStaff, masterItem_heavyFeet, masterItem_sword, player_Encumbrance, wepDef } from "./variables"
 
@@ -29,7 +29,7 @@ describe("#StatScaling", () => {
             Constitution: 5
         }
 
-        expect(StatScaling(stats, wepDef, attributeDefinitions)).toBe(4.782375)
+        expect(StatScaling("Strength", stats.Strength, wepDef, attributeDefinitions)).toBe(4.782375)
     })
 })
 
@@ -57,4 +57,14 @@ describe('#EquipLoadBaseDamage', () => {
     it("returns 20", () => expect(EquipLoadBaseDamage(player_Encumbrance, light)).toBe(.2))
     it("returns 10", () => expect(EquipLoadBaseDamage(player_Encumbrance, med)).toBe(.1))
     it("returns 0", () => expect(EquipLoadBaseDamage(player_Encumbrance, heavy)).toBe(0))
+})
+
+describe('#WeaponDamage', () => {
+    it('', () => {
+        const statScaling = 4.782375
+        const levelScaling = 1.475
+        const weaponBaseDamage = 187.8953441513981
+
+        expect(WeaponDamage(weaponBaseDamage, statScaling, levelScaling)).toBe(1363.6269732607527)
+    })
 })

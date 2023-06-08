@@ -1,3 +1,4 @@
+import { ItemWeight } from "../utils.js";
 import { MannequinSlot } from "./mannequinslot.mjs";
 
 //@ts-check
@@ -27,5 +28,9 @@ export class MannequinWeaponSlot extends MannequinSlot {
     setItemDefinition(itemDefinition) {
         this.#itemDefinition = itemDefinition;
         return this
+    }
+
+    get Weight() {
+        return ItemWeight(this.#itemDefinition)
     }
 }
