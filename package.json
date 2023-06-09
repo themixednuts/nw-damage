@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "lint": "tsc",
-    "test": "vitest --coverage"
+    "test": "vitest --coverage",
+    "release": "changeset publish"
   },
   "keywords": [],
   "license": "MIT",
