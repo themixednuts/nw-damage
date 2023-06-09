@@ -101,7 +101,7 @@ export const wepDef = {
 
 
 /**
- * @type {import("@mixednuts/types/datasheets").ArmorItemDefinitions}
+ * @type {import("@mixednuts/types").ArmorItemDefinitions}
  */
 
 export const armorDef = {
@@ -200,7 +200,7 @@ export const armorDef = {
 
 
 /**
- * @type {import("@mixednuts/types/datasheets").MasterItemDefinitions}
+ * @type {import("@mixednuts/types").MasterItemDefinitions}
  */
 export const masterItem_heavyFeet = {
     "ItemID": "Omega_HeavyFeet_Soldier",
@@ -296,7 +296,7 @@ export const masterItem_heavyFeet = {
 
 
 /**
- * @type {import("@mixednuts/types/datasheets").MasterItemDefinitions}
+ * @type {import("@mixednuts/types").MasterItemDefinitions}
  */
 export const masterItem_fireStaff = {
     "ItemID": "Omega_StaffFire_Damage",
@@ -391,7 +391,7 @@ export const masterItem_fireStaff = {
 }
 
 /**
- * @type {import("@mixednuts/types/datasheets").MasterItemDefinitions}
+ * @type {import("@mixednuts/types").MasterItemDefinitions}
  */
 export const masterItem_sword = {
     "ItemID": "Omega_Longsword_Damage",
@@ -486,7 +486,7 @@ export const masterItem_sword = {
 }
 
 /**
- * @type {import("@mixednuts/types/datasheets").AttributeDefinition[]}
+ * @type {import("@mixednuts/types").AttributeDefinition[]}
  */
 export const attributeDefinitions = [
     {
@@ -554,7 +554,7 @@ export const attributeDefinitions = [
 ]
 
 /**
- * @type {import("@mixednuts/types/datasheets").PerkData}
+ * @type {import("@mixednuts/types").PerkData}
  */
 export const fireGem_t2 = {
     "PerkID": "PerkID_Gem_FireDMG2",
@@ -589,7 +589,7 @@ export const fireGem_t2 = {
 
 
 /**
- * @type {import("@mixednuts/types/datasheets").EncumbranceData}
+ * @type {import("@mixednuts/types").EncumbranceData}
  */
 export const player_Encumbrance = {
     "ContainerTypeID": "Player",

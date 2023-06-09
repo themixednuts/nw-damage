@@ -8,7 +8,7 @@
 * @typedef {import("@mixednuts/types").PerkData} PerkData
 * @typedef {import("@mixednuts/types").WeaponItemDefinitions} WeaponItemDefinitions
 * @typedef {import("@mixednuts/types").VitalsData} VitalsData
-* @typedef {import("@mixednuts/types/playerbaseattributes").PlayerBaseAttributesData} PlayerBaseAttributesData
+* @typedef {import("@mixednuts/types/playerbaseattributes.js").PlayerBaseAttributesData} PlayerBaseAttributesData
 * @typedef {import("@mixednuts/types").DamageTypeData} DamageTypeData
 * @typedef {import("@mixednuts/types").EncumbranceData} EncumbranceData
 * @typedef {import("@mixednuts/types").AffixStatData} AffixStatData
@@ -25,7 +25,7 @@
 * @typedef {"head" | "chest" | "hands" | "legs" | "feet" | "ring" | "earring" | "trinket" } ArmorSlotTypes
 * @typedef {"mainhand" | "offhand" | "shield" | "heartrune"} WeaponSlotTypes
 * @typedef { ArmorSlotTypes | WeaponSlotTypes} SlotTypes
-* @typedef {import("./classes/mannequinstats.mjs").StatsType} StatsType
+* @typedef {import("./classes/mannequinstats.js").StatsType} StatsType
 * @typedef {"Strength" | "Dexterity" | "Intelligence" | "Focus" | "Constitution"} AttributeNames
 * @typedef {{"AbilityDataSum": Record<keyof AbilityData, number>, "StatusAffixDataSum": Record<keyof StatusEffectData | keyof AffixStatData, number>}} PropertySumObject 
 */
@@ -123,11 +123,14 @@ export function WeaponDamage(weaponBaseDamage, statScaling, levelScaling) {
  * const statScaling = StatScaling("Strength", weaponItemDefinition, attributeDefinitions)
  */
 export function StatScaling(attributeName, weaponItemDefinition, attributeDefinitions) {
+  if(attributeName === "Constitution") return;
+
   const { ModifierValueSum } = attributeDefinitions
   if (ModifierValueSum === null || ModifierValueSum === undefined) {
     throw new Error("No ModifierValueSum found in the AttributeDefinition object")
   }
-  const scaled = weaponItemDefinition[`Scaling${attributeName}`] * ModifierValueSum
+  // @ts-ignore
+  const scaled = weaponItemDefinition?.[`Scaling${attributeName}`] * ModifierValueSum
 
   return scaled
 }
@@ -169,7 +172,7 @@ export function EquipLoadBaseDamage(encumbranceData, equipLoad) {
  */
 export function IsItemClassIncluded(masterItemDefinition, itemPerk) {
   const masterItemClass = MasterItemClassSplit(masterItemDefinition)
-  return itemPerk.ItemClass.split('+').some(item => masterItemClass.includes(item))
+  return itemPerk.ItemClass.split('+').some((/** @type {any} */ item) => masterItemClass.includes(item))
 }
 
 
@@ -180,7 +183,7 @@ export function IsItemClassIncluded(masterItemDefinition, itemPerk) {
  */
 export function IsItemClassExcluded(masterItemDefinition, itemPerk) {
   const masterItemClass = MasterItemClassSplit(masterItemDefinition)
-  return itemPerk.ExcludeItemClass.split('+').some(item => masterItemClass.includes(item))
+  return itemPerk.ExcludeItemClass.split('+').some((/** @type {any} */ item) => masterItemClass.includes(item))
 }
 
 /**
@@ -188,7 +191,7 @@ export function IsItemClassExcluded(masterItemDefinition, itemPerk) {
  * @param {MasterItemDefinitions} masterItemDefinition 
  */
 export function MasterItemClassSplit(masterItemDefinition) {
-  return masterItemDefinition.ItemClass.split('+').map(item => item.trim())
+  return masterItemDefinition.ItemClass.split('+').map((/** @type {string} */ item) => item.trim())
 }
 
 /**
@@ -203,7 +206,7 @@ export function ScaleVitalsCategoryProperty(value, vitalsCategory, scaling) {
     return 0
   }
 
-  const checks = value.split('+').map(item => item.trim())
+  const checks = value.split('+').map((/** @type {string} */ item) => item.trim())
   let isMatch
   let sum = 0
   for (const check of checks) {
@@ -231,8 +234,10 @@ export function ScaleVitalsCategoryProperty(value, vitalsCategory, scaling) {
  * @param {StatusEffectCategoryData} [statusCategoryData]
  */
 export function StatusEffectLimit(statusData, statusCategoryData) {
-  const isCapped = statusData.EffectCategories.split('+').map(item => item.trim()).some(item => statusCategoryData?.StatusEffectCategoryID === item)
-  const limit = statusCategoryData?.ValueLimits.split(',').map(item => item.trim())
+  // @ts-ignore
+  const isCapped = statusData.EffectCategories.split('+').map((/** @type {string} */ item) => item.trim()).some((/** @type {any} */ item) => statusCategoryData?.StatusEffectCategoryID === item)
+  // @ts-ignore
+  const limit = statusCategoryData?.ValueLimits.split(',').map((/** @type {string} */ item) => item.trim())
 
 }
 
@@ -247,7 +252,7 @@ export function ItemPerkScaling(itemPerk, gearScore, masterDefiniton) {
   let bonus = 0
 
   if (masterDefiniton) {
-    ItemClassGSBonus.split(",").forEach(gsbonus => {
+    ItemClassGSBonus.split(",").forEach((/** @type {string} */ gsbonus) => {
       const arr = gsbonus.split(":")
       const itemClass = arr[0]
       const value = arr[1]
@@ -273,8 +278,10 @@ export function binarySearchObject(arr, target, searchField) {
 
   while (leftIndex <= rightIndex) {
     let middleIndex = Math.floor((leftIndex + rightIndex) / 2)
+    // @ts-ignore
     if (target === arr[middleIndex][searchField]) return arr[middleIndex]
 
+    // @ts-ignore
     if (target < arr[middleIndex][searchField]) rightIndex = middleIndex - 1
     else leftIndex = middleIndex + 1
   }

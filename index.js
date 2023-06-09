@@ -1,9 +1,9 @@
 //@ts-check
 
-import { MannequinWeaponSlot } from "./classes/mannequinarmorslot.mjs";
-import { MannequinStats } from "./classes/mannequinstats.mjs";
-import { MannequinVitals } from "./classes/mannequinvitals.mjs";
-import { MannequinArmorSlot } from "./classes/mannequinweaponslot.mjs";
+import { MannequinWeaponSlot } from "./classes/mannequinarmorslot.js";
+import { MannequinStats } from "./classes/mannequinstats.js";
+import { MannequinVitals } from "./classes/mannequinvitals.js";
+import { MannequinArmorSlot } from "./classes/mannequinweaponslot.js";
 
 /**
 * @typedef {import("@mixednuts/types").ArmorItemDefinitions} ArmorItemDefinitions
@@ -11,7 +11,7 @@ import { MannequinArmorSlot } from "./classes/mannequinweaponslot.mjs";
 * @typedef {import("@mixednuts/types").PerkData} PerkData
 * @typedef {import("@mixednuts/types").WeaponItemDefinitions} WeaponItemDefinitions
 * @typedef {import("@mixednuts/types").VitalsData} VitalsData
-* @typedef {import("@mixednuts/types/playerbaseattributes").PlayerBaseAttributesData} PlayerBaseAttributesData
+* @typedef {import("@mixednuts/types/playerbaseattributes.js").PlayerBaseAttributesData} PlayerBaseAttributesData
 * @typedef {import("@mixednuts/types").DamageTypeData} DamageTypeData
 * @typedef {"head" | "chest" | "hands" | "legs" | "feet" | "ring" | "earring" | "trinket" } ArmorSlotTypes
 * @typedef {"mainhand" | "offhand" | "shield" | "heartrune"} WeaponSlotTypes
@@ -58,10 +58,10 @@ export default class Mannequin {
     return this.#stats
   }
 
-  EquippedAbilities() {
-    const arr = []
-    for (const slot of Object.values(this.Equipment)) {
-      slot.Perks
-    }
-  }
+  // EquippedAbilities() {
+  //   const arr = []
+  //   for (const slot of Object.values(this.Equipment)) {
+  //     slot.Perks
+  //   }
+  // }
 }

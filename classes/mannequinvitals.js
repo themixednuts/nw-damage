@@ -1,27 +1,27 @@
 
 /**
- * @typedef {import("@mixednuts/types/datasheets").VitalsData} VitalsData
+ * @typedef {import("@mixednuts/types").VitalsData} VitalsData
  */
 export class MannequinVitals {
-    /** @type {VitalsData} */
+    /** @type {VitalsData | undefined} */
     #data
 
     #level = 60
 
     /** @type {number} */
-    #hp
+    #hp = 0
 
     /** @type {number} */
-    #mana
+    #mana = 0
 
     /** @type {number} */
-    #stamina
+    #stamina = 0
 
 
     /** @param {VitalsData} vitals */
     set(vitals) {
         this.#data = structuredClone(vitals)
-        this.#hp = this.#data.HealthInitial
+        this.#hp = Number(this.#data.HealthInitial)
         this.#mana = this.#data.ManaInitial
         this.#stamina = this.#data.StaminaInitial
 

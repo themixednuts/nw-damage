@@ -1,8 +1,8 @@
 //@ts-check
 
-import { EquipLoadBaseDamage, IsItemClassExcluded, IsItemClassIncluded, ItemWeight, LevelScaling, StatScaling, WeaponBaseDamage, WeaponDamage } from "./utils"
+import { EquipLoadBaseDamage, IsItemClassExcluded, IsItemClassIncluded, ItemWeight, LevelScaling, StatScaling, WeaponBaseDamage, WeaponDamage } from "./utils.js"
 import { describe, expect, it } from "vitest"
-import { armorDef, attributeDefinitions, fireGem_t2, masterItem_fireStaff, masterItem_heavyFeet, masterItem_sword, player_Encumbrance, wepDef } from "./variables"
+import { armorDef, attributeDefinitions, fireGem_t2, masterItem_fireStaff, masterItem_heavyFeet, masterItem_sword, player_Encumbrance, wepDef } from "./variables.js"
 
 
 describe("#WeaponBaseDamage", () => {
@@ -21,15 +21,40 @@ describe("#LevelScaling", () => {
 
 describe("#StatScaling", () => {
     it("returns 4.782375", () => {
-        const stats = {
-            Strength: 500,
-            Intelligence: 5,
-            Dexterity: 5,
-            Focus: 5,
-            Constitution: 5
-        }
 
-        expect(StatScaling("Strength", stats.Strength, wepDef, attributeDefinitions)).toBe(4.782375)
+        /**@type {import("@mixednuts/types").AttributeDefinition} */
+        const stats = {
+        "Level": 500,
+        "Health": 0,
+        "HealthRate": 0,
+        "Stamina": 0,
+        "StaminaRate": 0,
+        "Mana": 0,
+        "ManaRate": 0,
+        "CastSpeed": 0,
+        "EquipLoad": 0,
+        "NumAttuneSlots": 0,
+        "Encumbrance": 0,
+        "AbsFalling": 0,
+        "DefStandard": 0,
+        "DefSlash": 0,
+        "DefThrust": 0,
+        "DefStrike": 0,
+        "DefMagic": 0,
+        "DefFire": 0,
+        "DefLightning": 0,
+        "DefCorruption": 0,
+        "ResFrostbite": 0,
+        "ResPoison": 0,
+        "ResBleed": 0,
+        "ResDisease": 0,
+        "ResCurse": 0,
+        "ScalingValue": 0,
+        "ModifierValue": 0.78,
+        "ModifierValueSum": 531.375,
+        "EquipAbilities": ""
+    }
+        expect(StatScaling("Strength", wepDef, stats)).toBe(4.782375)
     })
 })
 

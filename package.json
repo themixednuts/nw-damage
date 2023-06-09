@@ -1,14 +1,17 @@
 {
   "name": "@mixednuts/damage",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Library for Amazon Game Studio's New World. Focusing on damage calculations, functions, and scripts.",
-  "main": "index.mjs",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
+    "lint": "tsc",
     "test": "vitest --coverage"
   },
   "keywords": [],
   "license": "MIT",
   "devDependencies": {
+    "@changesets/cli": "^2.26.1",
     "@vitest/coverage-c8": "^0.31.4",
     "typescript": "^5.1.3",
     "vitest": "^0.31.4"

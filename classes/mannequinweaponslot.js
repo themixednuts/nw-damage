@@ -1,7 +1,7 @@
 //@ts-check
 
 import { ItemWeight } from "../utils.js";
-import { MannequinSlot } from "./mannequinslot.mjs";
+import { MannequinSlot } from "./mannequinslot.js";
 
 /**
 * 
@@ -9,12 +9,12 @@ import { MannequinSlot } from "./mannequinslot.mjs";
 */
 export class MannequinArmorSlot extends MannequinSlot {
     /**
-    * @type { import("../index.mjs").ArmorItemDefinitions }
+    * @type { import("../index.js").ArmorItemDefinitions | undefined }
     */
     #itemDefinition
 
     /**
-    * @param {import("../index.mjs").ArmorSlotTypes} type
+    * @param {import("../index.js").ArmorSlotTypes} type
     */
     constructor(type) {
         super(type)
@@ -27,7 +27,7 @@ export class MannequinArmorSlot extends MannequinSlot {
     }
 
     /**
-    * @param {import("../index.mjs").ArmorItemDefinitions} itemDefinition
+    * @param {import("../index.js").ArmorItemDefinitions} itemDefinition
     */
     setItemDefinition(itemDefinition) {
         this.#itemDefinition = itemDefinition;
@@ -35,6 +35,6 @@ export class MannequinArmorSlot extends MannequinSlot {
     }
 
     get Weight() {
-        return ItemWeight(this.#itemDefinition)
+        if(this.#itemDefinition) return ItemWeight(this.#itemDefinition)
     }
 }

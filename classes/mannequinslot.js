@@ -6,25 +6,25 @@ export class MannequinSlot {
   */
   #masterDefinition
   /**
-  * @type {import("../index.mjs").SlotTypes}
+  * @type {import("../index.js").SlotTypes}
   */
   #type
 
   #gearscore = 625;
 
   /**
-  * @type {import("../index.mjs").PerkData[]}
+  * @type {import("../index.js").PerkData[]}
   */
   #perks = []
 
   /**
-  * @param {import("../index.mjs").SlotTypes} type
+  * @param {import("../index.js").SlotTypes} type
   */
   constructor(type) {
     this.#type = type
   }
 
-  /** @param {import("../index.mjs").MasterItemDefinitions} masterDefiniton */
+  /** @param {import("../index.js").MasterItemDefinitions} masterDefiniton */
   setMasterDefinition(masterDefiniton) {
     this.#masterDefinition = masterDefiniton
     return this
@@ -59,7 +59,7 @@ export class MannequinSlot {
 
 
   /**
-  * @param {import("../index.mjs").PerkData} perk
+  * @param {import("../index.js").PerkData} perk
   * @param {number} index
   */
   setPerk(perk, index) {
