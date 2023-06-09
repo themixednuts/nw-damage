@@ -1,5 +1,5 @@
 {
-  "name": "@mixednuts/damage",
+  "name": "@mixednuts/nw-damage",
   "version": "0.0.1",
   "description": "Library for Amazon Game Studio's New World. Focusing on damage calculations, functions, and scripts.",
   "main": "index.js",
